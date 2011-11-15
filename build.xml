@@ -1,0 +1,97 @@
+<project name="Hello-Disruptors" default="compile" basedir=".">
+  <description>Learning Disruptor Library</description>
+
+  <!-- load environment variables as properties -->
+  <property environment="env"/>
+
+  <!-- load properties files -->
+  <property file="build.properties"/>
+
+  <!-- default folder location properties -->
+  <property name="version" value="0.1"/>   <!-- EDIT THIS TO UPDATE VERSION -->
+  <property name="src.rel-dir" value="src"/>
+  <property name="lib.rel-dir" value="lib"/>
+  <property name="tests.src.rel-dir" value="${src.rel-dir}/com/syngenta/mint/test"/>
+  <property name="etc.rel-dir" value="etc"/>
+  <property name="build.rel-dir" value="build"/>
+  <property name="dist.rel-dir" value="dist"/>
+  <property name="doc.rel-dir" value="doc" />
+  <property name="javadoc.rel-dir" value="doc/javadoc" />
+  <property name="jar.rel-file" value="${dist.rel-dir}/${ant.project.name}-${version}.jar" />
+  <property name="test.dir" location="${build.rel-dir}/test" />
+  <property name="test.data.dir" location="${test.dir}/data" />
+  <property name="test.reports.dir" location="${test.dir}/reports" />
+
+
+  <!-- project classpath -->
+
+  <path id="project.classpath">
+    <!-- compiled classes -->
+    <pathelement location="${build.rel-dir}" />
+    <!-- libraries -->
+    <fileset dir="${lib.rel-dir}">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <!-- basic -->
+
+  <target name="init">
+    <mkdir dir="${build.rel-dir}"/>
+    <mkdir dir="${dist.rel-dir}"/>
+    <mkdir dir="${javadoc.rel-dir}"/>
+  </target>
+
+  <target name="clean" description="Delete all rebuildable files">
+    <delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+    <delete dir="${dist.rel-dir}" failonerror="false" deleteonexit="true" />
+    <delete dir="${javadoc.rel-dir}" failonerror="false" deleteonexit="true" />
+  </target>
+
+  <!-- compile -->
+
+  <target name="prepare-resources" depends="init">
+    <!-- description="Prepare application resource files" -->
+    <copy todir="${build.rel-dir}" overwrite="true">
+      <fileset dir="${src.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" />
+    </copy>
+    <!-- ~TODO: not sure why we need replace ... -->
+    <!-- Replace is a directory based task for replacing the occurrence of a given 
+         string with another string in selected file -->
+    <replace dir="${build.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" summary="true">
+      <replacefilter token="@example-token@" value="${example-property}" />
+    </replace>
+  </target>
+
+  <property name="compile.debug" value="true" />
+  <property name="compile.debuglevel" value="lines,vars,source" />
+
+  <target name="compile" depends="init,prepare-resources" description="Compile java classes">
+    <!-- description="Compile source code" -->
+    <javac
+        srcdir="${src.rel-dir}"
+        destdir="${build.rel-dir}"
+        debug="${compile.debug}"
+        debuglevel="${compile.debuglevel}"
+        includeantruntime="false"> <!-- to overcome misfeature in Ant 1.8 -->
+      <compilerarg line="-Xlint:unchecked" /> <!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+      <classpath refid="project.classpath" />
+    </javac>
+  </target>
+  
+  
+  <!-- run -->
+
+  <target name="run-seqbarrier" depends="compile" description="Run program">
+    <java classname="mint.disruptor.DisruptorDemoSeqBarrierWaitFor">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-wrap" depends="compile" description="Run program">
+    <java classname="mint.disruptor.WrapBehavior">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+</project>
