@@ -10,15 +10,15 @@ public class DemoEvent {
   private UUID uuid;
   private String name;
   private Date timestamp;
-  private long procId;    // dummy id to make it easier to watch in the RingBuffer
+  private long procId = 0L;    // dummy id to make it easier to watch in the RingBuffer
 
   public String toString() {
     return String.format("DemoEvent:\n  UUID: %s\n  Name: %s\n  Process Id: %d\n  Timestamp: %s",
-                         (uuid == null ? "null" : uuid.toString()), name, procId, (timestamp == null ? "null" :timestamp.toString()));
+                         (uuid == null ? "null" : uuid.toString()), name, procId,
+                         (timestamp == null ? "null" : timestamp.toString()));
   }
 
-  public DemoEvent() {
-  }
+  public DemoEvent() {}
 
   public DemoEvent(final UUID uuid, final String name, final long procId) {
     this(uuid, name, procId, new Date());
@@ -34,21 +34,33 @@ public class DemoEvent {
   public DemoEvent(DemoEvent ev) {
     this.uuid = ev.uuid;
     this.name = ev.name;
-    this.timestamp = new Date(ev.timestamp.getTime());    
+    this.procId = procId;
+    if (ev.timestamp == null) {
+      this.timestamp = new Date();
+    } else {
+      this.timestamp = new Date(ev.timestamp.getTime());
+    }
   }
 
   public void copy(DemoEvent ev) {
     this.uuid = ev.uuid;
     this.name = ev.name;
     this.procId = ev.procId;
-    this.timestamp = new Date(ev.timestamp.getTime());
+    if (ev.timestamp == null) {
+      this.timestamp = new Date();
+    } else {
+      this.timestamp = new Date(ev.timestamp.getTime());
+    }
   }
 
   /* ---[ GETTERS and SETTERS ]--- */
 
   public UUID getUUID() { return uuid; }
   public String getName() { return name; }
-  public Date getTimestamp() { return new Date(timestamp.getTime()); }
+  public Date getTimestamp() {
+    if (timestamp == null) return timestamp;
+    else return new Date(timestamp.getTime());
+  }
   public long getProcessId() { return procId; }
   
   public void setUUID(UUID uuid) {
@@ -63,7 +75,7 @@ public class DemoEvent {
     this.timestamp = new Date(tstamp.getTime());
   }
 
-  public void setProcessId(long pid) {
+  public void setProcessId(long procId) {
     this.procId = procId;
   }
 
@@ -78,5 +90,4 @@ public class DemoEvent {
       return new DemoEvent();
     }
   };
-  
 }

@@ -83,25 +83,31 @@
   <!-- run -->
 
   <target name="run-simple" depends="compile" description="Run SimplePublishConsumeDemo">
-    <java classname="mint.disruptor.SimplePublishConsumeDemo">
+    <java classname="demo.disruptor.SimplePublishConsumeDemo">
       <classpath refid="project.classpath" />
     </java>
   </target>
   
   <target name="run-wrap" depends="compile" description="Run WrapBehavior demo">
-    <java classname="mint.disruptor.WrapBehavior">
+    <java classname="demo.disruptor.WrapBehavior">
       <classpath refid="project.classpath" />
     </java>
   </target>
   
   <target name="run-ahead" depends="compile" description="Run PublishAhead demo">
-    <java classname="mint.disruptor.PublishAhead">
+    <java classname="demo.disruptor.PublishAhead">
       <classpath refid="project.classpath" />
     </java>
   </target>
   
   <target name="run-two-consumers" depends="compile" description="Run GateOnTwoConsumers demo">
-    <java classname="mint.disruptor.GateOnTwoConsumers">
+    <java classname="demo.disruptor.GateOnTwoConsumers">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-disruptor" depends="compile" description="Run SimpleDisruptor demo">
+    <java classname="demo.disruptor.SimpleDisruptor">
       <classpath refid="project.classpath" />
     </java>
   </target>
