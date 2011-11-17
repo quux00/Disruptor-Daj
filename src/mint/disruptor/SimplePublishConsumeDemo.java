@@ -22,7 +22,7 @@ public class SimplePublishConsumeDemo extends AbstractDemoFramework {
     System.out.println("Cursor after  pub2: " + getRingBuffer().getCursor());
 
     // two events published - both will be consumed
-    consume(firstPub);
+    consumeAll(firstPub);
   }
 
   public static void main(String[] args) {

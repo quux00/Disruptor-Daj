@@ -28,22 +28,6 @@ public abstract class AbstractDemoFramework {
     return 32;
   }
 
-  public Sequence[] getGatingSequences() {
-    EventProcessor[] eps = getEventProcessors();
-    Sequence[] seqs = new Sequence[eps.length];
-    for (int i = 0; i < eps.length; i++) {
-      seqs[i] = eps[i].getSequence();
-    }
-    return seqs;
-  }
-
-  // override this to set the EventProcessor
-  // defaults to NoOpEventProcessor
-  public EventProcessor[] getEventProcessors() {
-    EventProcessor[] ary = {new NoOpEventProcessor(ringBuf)};
-    return ary;
-  }
-
   public RingBuffer<MintEvent> getRingBuffer() {
     return ringBuf;
   }
@@ -132,16 +116,19 @@ public abstract class AbstractDemoFramework {
   }
 
   /**
-   * Initializes a RingBuffer
-   * and sets the GatingSequences to be
-   * 
+   * Initializes a RingBuffer and a NoOpEventProcessor
+   * and sets the GatingSequences to be off the NoOpEventProcessor (which
+   * doesn't gate at all, since it always advances in lock step with the
+   * Ring's publisher barrier.
    */
   protected AbstractDemoFramework init() {
     ringBuf = new RingBuffer<MintEvent>(MintEvent.FACTORY, getRingCapacity());
     consumerBarrier = ringBuf.newBarrier();
+    NoOpEventProcessor ep = new NoOpEventProcessor(ringBuf);
     // sets the sequence that will gate publishers to prevent the buffer wrapping
-    ringBuf.getGatingSequences();
+    ringBuf.setGatingSequences(ep.getSequence());
     return this;
   }
+
 
 }

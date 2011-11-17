@@ -7,9 +7,9 @@ public class PublishAhead extends AbstractDemoFramework {
   @Override
   public void engage() {
     long firstPub = publishAhead();
-    consume(firstPub);   // this will get the one just pushed
-    consume(firstPub-1); // this will get the one just pushed
-                         // and the dummy/blank Event before it
+    consumeOne(firstPub);   // this will get the one just pushed
+    consumeOne(firstPub-1); // this will get the one just pushed
+                            // and the dummy/blank Event before it
   }
 
   public long publishAhead() {
