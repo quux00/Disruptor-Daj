@@ -1,15 +1,15 @@
 package mint.disruptor;
 
-import java.util.*;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import com.lmax.disruptor.*;
 
 /**
- * Abstract test/demo framework providing key set up and publish
+ * Abstract test/demo framework providing key set up, publish
  * consume methods for testing out and learning the Disruptor framework
  */
 public abstract class AbstractDemoFramework {
   
-  private final int RING_CAPACITY;
   private RingBuffer<MintEvent> ringBuf;
   private SequenceBarrier consumerBarrier;
   private long npublished = 0L;
@@ -18,17 +18,27 @@ public abstract class AbstractDemoFramework {
 
   // override this to set the RING_CAPACITY size
   // defaults to 32
-  public void getRingCapacity() {
+  public int getRingCapacity() {
     return 32;
+  }
+
+  public Sequence[] getGatingSequences() {
+    EventProcessor[] eps = getEventProcessors();
+    Sequence[] seqs = new Sequence[eps.length];
+    for (int i = 0; i < eps.length; i++) {
+      seqs[i] = eps[i].getSequence();
+    }
+    return seqs;
   }
 
   // override this to set the EventProcessor
   // defaults to NoOpEventProcessor
-  public EventProcessor getEventProcessor() {
-    return new NoOpEventProcessor(ringBuf);
+  public EventProcessor[] getEventProcessors() {
+    EventProcessor[] ary = {new NoOpEventProcessor(ringBuf)};
+    return ary;
   }
 
-  public RingBuffer getRingBuffer() {
+  public RingBuffer<MintEvent> getRingBuffer() {
     return ringBuf;
   }
 
@@ -38,16 +48,19 @@ public abstract class AbstractDemoFramework {
    * 
    * @param lastPub the slot number of the last published event
    */
-  private void consume(long lastPub) {
+  protected void consume(long consumeSlot) {
     try {
-      long mostRecent = consumerBarrier.waitFor(lastPub);
-      System.out.printf("Consumer: Asked for %d; last published: %d\n", lastPub, mostRecent);
-      for (long i = lastPub; i <= mostRecent - lastPub; i++) {
+      long mostRecent = consumerBarrier.waitFor(consumeSlot);
+      System.out.printf("Consumer: Asked for %d; last published: %d\n",
+                        consumeSlot, mostRecent);
+      // for (long i = lastPub; i <= mostRecent - lastPub; i++) {
+      for (long i = consumeSlot; i <= mostRecent; i++) {
         MintEvent ev = ringBuf.get(i);
         System.out.println("Consumed Event: " + ev.toString());
       }
     } catch (Exception e)  {
-      System.out.println("Consumer Barrier wait failed: " + e.toString());
+      System.out.println("Consumer Barrier retrieve failed: " + e.toString());
+      e.printStackTrace();
     }
   }
 
@@ -56,24 +69,42 @@ public abstract class AbstractDemoFramework {
    * 
    * @return the slot number that was just published into
    */
-  private long publish() {
-    long claim = ringBuf.next();
+  protected long publish() {
+    return publish(-1);
+  }
+
+  protected long publish(long timeoutInSeconds) {
+    long claim;
+    if (timeoutInSeconds < 0) {
+      claim = ringBuf.next();
+    } else {
+      try {
+        claim = ringBuf.next(timeoutInSeconds, TimeUnit.SECONDS);
+      } catch (Exception e) {
+        System.out.println("Publish request timed out: " + e.toString());
+        return -1;
+      }
+    }
     MintEvent oldev = ringBuf.get(claim);
     MintEvent newev = new MintEvent(UUID.randomUUID(), "MoveInventory", npublished++);
     oldev.copy(newev);
     ringBuf.publish(claim);
     System.out.printf("Just published to event %s to sequence slot: %d\n",
                       newev.getUUID().toString(), claim);
-    return claim;
+    return claim;    
   }
 
-  private void setUpRingBuffer() {
+  /**
+   * Initializes a RingBuffer
+   * and sets the GatingSequences to be
+   * 
+   */
+  protected AbstractDemoFramework init() {
     ringBuf = new RingBuffer<MintEvent>(MintEvent.FACTORY, getRingCapacity());
     consumerBarrier = ringBuf.newBarrier();
     // sets the sequence that will gate publishers to prevent the buffer wrapping
-    //~TODO: do we need to create a NoOpEventProcessor here?  why not just
-    // pass it the RingBuffer itself, - isn't that what this getSequence() returns?
-    ringBuf.setGatingSequences(getEventProcessor().getSequence());
+    ringBuf.setGatingSequences(getGatingSequences());
+    return this;
   }
 
 }

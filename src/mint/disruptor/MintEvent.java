@@ -14,7 +14,7 @@ public class MintEvent {
 
   public String toString() {
     return String.format("MintEvent:\n  UUID: %s\n  Name: %s\n  Process Id: %d\n  Timestamp: %s",
-                         uuid.toString(), name, procId, timestamp.toString());
+                         (uuid == null ? "null" : uuid.toString()), name, procId, (timestamp == null ? "null" :timestamp.toString()));
   }
 
   public MintEvent() {
