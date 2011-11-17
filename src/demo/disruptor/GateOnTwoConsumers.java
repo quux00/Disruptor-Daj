@@ -1,4 +1,4 @@
-package mint.disruptor;
+package demo.disruptor;
 
 import com.lmax.disruptor.*;
 
@@ -11,7 +11,7 @@ public class GateOnTwoConsumers extends AbstractDemoFramework {
 
   @Override
   public void engage() {
-    final RingBuffer<MintEvent> ringBuf = getRingBuffer();
+    final RingBuffer<DemoEvent> ringBuf = getRingBuffer();
     final SequenceBarrier ringBarrier = ringBuf.newBarrier();  
     //TODO: should each share the same barrier: yes
     SingleSlotProcessor ssp1 = new SingleSlotProcessor(1, ringBarrier, ringBuf);
@@ -57,12 +57,12 @@ public class GateOnTwoConsumers extends AbstractDemoFramework {
     private final int id;
     private final Sequence myseq = new Sequence();  // init val: -1
     private final SequenceBarrier barrier;
-    private final RingBuffer<MintEvent> ringBuf;
+    private final RingBuffer<DemoEvent> ringBuf;
     private int lastSlotConsumed = -1;
 
     public SingleSlotProcessor(final int id,
                                final SequenceBarrier barrier,
-                               final RingBuffer<MintEvent> ringBuf)
+                               final RingBuffer<DemoEvent> ringBuf)
     {
       this.id = id;
       this.barrier = barrier;
@@ -85,8 +85,8 @@ public class GateOnTwoConsumers extends AbstractDemoFramework {
         return;
       }
       // consume only one, not the whole batch
-      MintEvent ev = ringBuf.get(++lastSlotConsumed);
-      System.out.printf("Consumer %d; lastPub = %d; MintEvent: %s\n", 
+      DemoEvent ev = ringBuf.get(++lastSlotConsumed);
+      System.out.printf("Consumer %d; lastPub = %d; DemoEvent: %s\n", 
                          id, lastPub, ev.toString());
 
       // need to update your Sequence to let the publisher (or trailing)

@@ -1,4 +1,4 @@
-package mint.disruptor;
+package demo.disruptor;
 
 import java.util.*;
 import com.lmax.disruptor.*;

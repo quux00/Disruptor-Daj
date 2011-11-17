@@ -1,4 +1,4 @@
-package mint.disruptor;
+package demo.disruptor;
 
 import java.util.*;
 import com.lmax.disruptor.*;
@@ -21,7 +21,7 @@ public class WrapBehavior extends AbstractDemoFramework {
     publish(); // publish one beyond capacity, overwriting the first
     consumeAll(firstPub);  // this prints out a display that shows that 
                            // the event in slot zero and slot 8 are the same - 
-                           // - MintEvent-0 got overwritten
+                           // - DemoEvent-0 got overwritten
   }
 
   @Override

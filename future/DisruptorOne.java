@@ -1,11 +1,11 @@
-package mint.disruptor;
+package demo.disruptor;
 
 import java.util.*;
 import com.lmax.disruptor.*;
 
 public class DisruptorDemoSeqBarrierWaitFor {
   
-  private RingBuffer<MintEvent> ringBuf;
+  private RingBuffer<DemoEvent> ringBuf;
   private SequenceBarrier consumerBarrier;
 
   public void engage() {
@@ -20,7 +20,7 @@ public class DisruptorDemoSeqBarrierWaitFor {
       long mostRecent = consumerBarrier.waitFor(lastPub);
       System.out.printf("Consumer: Asked for %d; last published: %d\n", lastPub, mostRecent);
       for (long i = lastPub; i <= mostRecent - lastPub; i++) {
-        MintEvent ev = ringBuf.get(i);
+        DemoEvent ev = ringBuf.get(i);
         System.out.println("Consumed Event: " + ev.toString());
       }
     } catch (Exception e)  {
@@ -30,8 +30,8 @@ public class DisruptorDemoSeqBarrierWaitFor {
 
   private long publish() {
     long claim = ringBuf.next();
-    MintEvent oldev = ringBuf.get(claim);
-    MintEvent newev = new MintEvent(UUID.randomUUID(), "MoveInventory");
+    DemoEvent oldev = ringBuf.get(claim);
+    DemoEvent newev = new DemoEvent(UUID.randomUUID(), "MoveInventory");
     oldev.copy(newev);
     ringBuf.publish(claim);
     System.out.printf("Just published to event %s to sequence slot: %d\n", newev.getUUID().toString(), claim);
@@ -39,7 +39,7 @@ public class DisruptorDemoSeqBarrierWaitFor {
   }
 
   private void setUpRingBuffer() {
-    ringBuf = new RingBuffer<MintEvent>(MintEvent.FACTORY, 64);
+    ringBuf = new RingBuffer<DemoEvent>(DemoEvent.FACTORY, 64);
     consumerBarrier = ringBuf.newBarrier();
     // sets the sequence that will gate publishers to prevent the buffer wrapping
     //~TODO: do we need to create a NoOpEventProcessor here?  why not just

@@ -1,4 +1,4 @@
-package mint.disruptor;
+package demo.disruptor;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +10,7 @@ import com.lmax.disruptor.*;
  */
 public abstract class AbstractDemoFramework {
   
-  private RingBuffer<MintEvent> ringBuf;
+  private RingBuffer<DemoEvent> ringBuf;
   private SequenceBarrier consumerBarrier;
   private long npublished = 0L;
 
@@ -28,12 +28,12 @@ public abstract class AbstractDemoFramework {
     return 32;
   }
 
-  public RingBuffer<MintEvent> getRingBuffer() {
+  public RingBuffer<DemoEvent> getRingBuffer() {
     return ringBuf;
   }
 
   /**
-   * Consumes/Processes only one MintEvent, even if more
+   * Consumes/Processes only one DemoEvent, even if more
    * are available
    * 
    * @param lastPub the slot number of the last published event
@@ -44,7 +44,7 @@ public abstract class AbstractDemoFramework {
       System.out.printf("Consumer: Asked for %d; last published: %d\n",
                         consumeSlot, mostRecent);
 
-      MintEvent ev = ringBuf.get(consumeSlot);
+      DemoEvent ev = ringBuf.get(consumeSlot);
       System.out.println("Consumed Event: " + ev.toString());
 
     } catch (Exception e)  {
@@ -54,7 +54,7 @@ public abstract class AbstractDemoFramework {
   }
 
   /**
-   * Consumes/Processes as many MintEvent's as it can - up to the last
+   * Consumes/Processes as many DemoEvent's as it can - up to the last
    * one published and prints out their info to the screen
    * 
    * @param lastPub the slot number of the last published event
@@ -67,7 +67,7 @@ public abstract class AbstractDemoFramework {
 
       // cycle through all received
       for (long i = consumeSlot; i <= mostRecent; i++) {
-        MintEvent ev = ringBuf.get(i);
+        DemoEvent ev = ringBuf.get(i);
         System.out.println("Consumed Event: " + ev.toString());
       }
 
@@ -78,7 +78,7 @@ public abstract class AbstractDemoFramework {
   }
 
   /**
-   * Publishes a MintEvent into the next available slot on the RingBuffer
+   * Publishes a DemoEvent into the next available slot on the RingBuffer
    * 
    * @return the slot number that was just published into
    */
@@ -87,7 +87,7 @@ public abstract class AbstractDemoFramework {
   }
 
   /**
-   * Publishes a MintEvent into the next available slot on the RingBuffer
+   * Publishes a DemoEvent into the next available slot on the RingBuffer
    * with a timeout.  If it times out, a note is printed to STDOUT
    * and the method returns -1.
    * 
@@ -106,8 +106,8 @@ public abstract class AbstractDemoFramework {
         return -1;
       }
     }
-    MintEvent oldev = ringBuf.get(claim);
-    MintEvent newev = new MintEvent(UUID.randomUUID(), "MoveInventory", npublished++);
+    DemoEvent oldev = ringBuf.get(claim);
+    DemoEvent newev = new DemoEvent(UUID.randomUUID(), "MoveInventory", npublished++);
     oldev.copy(newev);
     ringBuf.publish(claim);
     System.out.printf("Just published to event %s to sequence slot: %d\n",
@@ -122,7 +122,7 @@ public abstract class AbstractDemoFramework {
    * Ring's publisher barrier.
    */
   protected AbstractDemoFramework init() {
-    ringBuf = new RingBuffer<MintEvent>(MintEvent.FACTORY, getRingCapacity());
+    ringBuf = new RingBuffer<DemoEvent>(DemoEvent.FACTORY, getRingCapacity());
     consumerBarrier = ringBuf.newBarrier();
     NoOpEventProcessor ep = new NoOpEventProcessor(ringBuf);
     // sets the sequence that will gate publishers to prevent the buffer wrapping
