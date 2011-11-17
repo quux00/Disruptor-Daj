@@ -14,10 +14,16 @@ public abstract class AbstractDemoFramework {
   private SequenceBarrier consumerBarrier;
   private long npublished = 0L;
 
+  /**
+   * All subclasses must implement - main logic goes here
+   */
   public abstract void engage();
 
-  // override this to set the RING_CAPACITY size
-  // defaults to 32
+  /**
+   * 
+   * Override this to set the RING_CAPACITY size
+   * defaults to 32
+   */
   public int getRingCapacity() {
     return 32;
   }
@@ -43,21 +49,44 @@ public abstract class AbstractDemoFramework {
   }
 
   /**
+   * Consumes/Processes only one MintEvent, even if more
+   * are available
+   * 
+   * @param lastPub the slot number of the last published event
+   */
+  protected void consumeOne(long consumeSlot) {
+    try {
+      long mostRecent = consumerBarrier.waitFor(consumeSlot);
+      System.out.printf("Consumer: Asked for %d; last published: %d\n",
+                        consumeSlot, mostRecent);
+
+      MintEvent ev = ringBuf.get(consumeSlot);
+      System.out.println("Consumed Event: " + ev.toString());
+
+    } catch (Exception e)  {
+      System.out.println("Consumer Barrier retrieve failed: " + e.toString());
+      e.printStackTrace();
+    }    
+  }
+
+  /**
    * Consumes/Processes as many MintEvent's as it can - up to the last
    * one published and prints out their info to the screen
    * 
    * @param lastPub the slot number of the last published event
    */
-  protected void consume(long consumeSlot) {
+  protected void consumeAll(long consumeSlot) {
     try {
       long mostRecent = consumerBarrier.waitFor(consumeSlot);
       System.out.printf("Consumer: Asked for %d; last published: %d\n",
                         consumeSlot, mostRecent);
-      // for (long i = lastPub; i <= mostRecent - lastPub; i++) {
+
+      // cycle through all received
       for (long i = consumeSlot; i <= mostRecent; i++) {
         MintEvent ev = ringBuf.get(i);
         System.out.println("Consumed Event: " + ev.toString());
       }
+
     } catch (Exception e)  {
       System.out.println("Consumer Barrier retrieve failed: " + e.toString());
       e.printStackTrace();
@@ -73,6 +102,14 @@ public abstract class AbstractDemoFramework {
     return publish(-1);
   }
 
+  /**
+   * Publishes a MintEvent into the next available slot on the RingBuffer
+   * with a timeout.  If it times out, a note is printed to STDOUT
+   * and the method returns -1.
+   * 
+   * @timeoutInSeconds number of seconds to wait before timing out
+   * @return the slot number that was just published into
+   */
   protected long publish(long timeoutInSeconds) {
     long claim;
     if (timeoutInSeconds < 0) {
@@ -103,7 +140,7 @@ public abstract class AbstractDemoFramework {
     ringBuf = new RingBuffer<MintEvent>(MintEvent.FACTORY, getRingCapacity());
     consumerBarrier = ringBuf.newBarrier();
     // sets the sequence that will gate publishers to prevent the buffer wrapping
-    ringBuf.setGatingSequences(getGatingSequences());
+    ringBuf.getGatingSequences();
     return this;
   }
 

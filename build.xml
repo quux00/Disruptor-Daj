@@ -82,14 +82,26 @@
   
   <!-- run -->
 
-  <target name="run-seqbarrier" depends="compile" description="Run program">
-    <java classname="mint.disruptor.DisruptorDemoSeqBarrierWaitFor">
+  <target name="run-simple" depends="compile" description="Run program">
+    <java classname="mint.disruptor.SimplePublishConsumeDemo">
       <classpath refid="project.classpath" />
     </java>
   </target>
   
   <target name="run-wrap" depends="compile" description="Run program">
     <java classname="mint.disruptor.WrapBehavior">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-ahead" depends="compile" description="Run program">
+    <java classname="mint.disruptor.PublishAhead">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-two-consumers" depends="compile" description="Run program">
+    <java classname="mint.disruptor.GateOnTwoConsumers">
       <classpath refid="project.classpath" />
     </java>
   </target>
