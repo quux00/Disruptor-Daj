@@ -112,5 +112,11 @@
     </java>
   </target>
   
+  <target name="run-serial-consumers" depends="compile" description="Run DisruptorWithSerialConsumers demo">
+    <java classname="demo.disruptor.DisruptorWithSerialConsumers">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
 </project>
 
