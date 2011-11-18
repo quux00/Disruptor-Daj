@@ -1,14 +1,21 @@
 package demo.disruptor.util;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import com.lmax.disruptor.*;
 import demo.disruptor.DemoEvent;
 
 public class DemoEventHandler implements EventHandler<DemoEvent> {
-  private int id;  // internal identifier for ease of identification in printouts
+  private final int id;  // internal identifier for ease of identification in printouts
+  private final CountDownLatch latch;
 
   public DemoEventHandler(int id) {
+    this(id, null);
+  }
+
+  public DemoEventHandler(final int id, final CountDownLatch latch) {
     this.id = id;
+    this.latch = latch;
   }
 
   public void onEvent(DemoEvent event, long sequence, boolean endOfBatch) {
@@ -18,5 +25,6 @@ public class DemoEventHandler implements EventHandler<DemoEvent> {
       System.out.println("Was End of Batch for DemoEventHandler: " + id);
     }
     System.out.flush();
+    if (latch != null) latch.countDown();
   }
 }

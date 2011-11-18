@@ -1,6 +1,8 @@
 package demo.disruptor;
 
 import com.lmax.disruptor.*;
+import demo.disruptor.util.SingleSlotProcessor;
+
 
 /**
  * Here we have two processors (consumers) that alternate which slots
@@ -45,54 +47,6 @@ public class GateOnTwoConsumers extends AbstractDemoFramework {
   @Override
   public int getRingCapacity() {
     return 4;
-  }
-
-  /* ----------------------------- */
-  /* ---[ SingleSlotProcessor ]--- */
-  /* ----------------------------- */
-
-  // TODO: after finish this, try out WorkProcessor<T> to see
-  // if it is also a SingleSlotProcessor
-  public static class SingleSlotProcessor implements EventProcessor{
-    private final int id;
-    private final Sequence myseq = new Sequence();  // init val: -1
-    private final SequenceBarrier barrier;
-    private final RingBuffer<DemoEvent> ringBuf;
-    private int lastSlotConsumed = -1;
-
-    public SingleSlotProcessor(final int id,
-                               final SequenceBarrier barrier,
-                               final RingBuffer<DemoEvent> ringBuf)
-    {
-      this.id = id;
-      this.barrier = barrier;
-      this.ringBuf = ringBuf;
-    }
-
-    public Sequence getSequence() {
-      return myseq;
-    }
-
-    public void halt() {}
-
-    public void run() {
-      long lastPub;
-      try {
-        lastPub = barrier.waitFor(barrier.getCursor());
-      } catch (Exception e) {
-        System.out.println("ERROR: " + e.toString());
-        e.printStackTrace();
-        return;
-      }
-      // consume only one, not the whole batch
-      DemoEvent ev = ringBuf.get(++lastSlotConsumed);
-      System.out.printf("Consumer %d; lastPub = %d; DemoEvent: %s\n", 
-                         id, lastPub, ev.toString());
-
-      // need to update your Sequence to let the publisher (or trailing)
-      // consumer know when you have processed it
-      myseq.set(myseq.get() + 1L);
-    }
   }
 
   public static void main(String[] args) {

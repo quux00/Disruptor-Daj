@@ -100,7 +100,8 @@
     </java>
   </target>
   
-  <target name="run-two-consumers" depends="compile" description="Run GateOnTwoConsumers demo">
+  <target name="run-parallel-consumers" depends="compile"
+          description="Run GateOnTwoConsumers demo">
     <java classname="demo.disruptor.GateOnTwoConsumers">
       <classpath refid="project.classpath" />
     </java>
@@ -114,6 +115,12 @@
   
   <target name="run-serial-consumers" depends="compile" description="Run DisruptorWithSerialConsumers demo">
     <java classname="demo.disruptor.DisruptorWithSerialConsumers">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-batchproc" depends="compile" description="Run BatchEventProcessorDemo">
+    <java classname="demo.disruptor.BatchEventProcessorDemo">
       <classpath refid="project.classpath" />
     </java>
   </target>
