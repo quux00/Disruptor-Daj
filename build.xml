@@ -125,5 +125,11 @@
     </java>
   </target>
   
+  <target name="run-workerpool" depends="compile" description="Run WorkerPoolDemo">
+    <java classname="demo.disruptor.WorkerPoolDemo">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
 </project>
 
