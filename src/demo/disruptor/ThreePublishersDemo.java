@@ -15,11 +15,14 @@ public class ThreePublishersDemo {
   public final static int RING_BUFFER_SIZE = 8;
   public final static int NUM_MSGS_TO_PUBLISH = 18;  // needs to be evenly divisible by 3
   public final static int NUM_PUBLISHERS = 3;
+
   final RingBuffer<DemoEvent> ringBuf;
   final BatchEventProcessor<DemoEvent> batchProc;
-  final CountDownLatch latch = new CountDownLatch(NUM_MSGS_TO_PUBLISH); // latch to wait until the consumer is finished
-  final CyclicBarrier cyclicBarrier = new CyclicBarrier(NUM_PUBLISHERS);
   final List<DemoPublisher> pubs;   // list of 3 publishers 
+  // latch to wait until the consumer is finished
+  final CountDownLatch latch = new CountDownLatch(NUM_MSGS_TO_PUBLISH); 
+  // barrier to synchronize all the publishing threads to start at the same time
+  final CyclicBarrier cyclicBarrier = new CyclicBarrier(NUM_PUBLISHERS);
 
   public ThreePublishersDemo() {
     ringBuf = new RingBuffer<DemoEvent>(DemoEvent.FACTORY,
@@ -74,6 +77,7 @@ public class ThreePublishersDemo {
     }
   }
 
+  /* ---[ Inner class: DemoPublisher ]--- */
   public static class DemoPublisher implements Runnable {
     private final int id;
     private final int howmany;   // how many events to publish once its run method is called

@@ -1,4 +1,4 @@
-package demo.disruptor;
+package demo.disruptor.fluent_dsl;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 
+import demo.disruptor.*;
 import demo.disruptor.util.DemoEventTranslator;
 import demo.disruptor.util.DemoEventHandler;
 

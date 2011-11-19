@@ -1,10 +1,12 @@
-package demo.disruptor;
+package demo.disruptor.fluent_dsl;
 
 import java.util.*;
 import java.util.concurrent.Executors;
+
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 
+import demo.disruptor.*;
 import demo.disruptor.util.DemoEventTranslator;
 import demo.disruptor.util.DemoEventHandler;
 
@@ -17,11 +19,11 @@ public class DisruptorWithSerialConsumers {
   
   public static final int RING_SIZE = 4;
 
-  Disruptor<DemoEvent> disruptor;
-  EventTranslator<DemoEvent> evTranslator;
-  EventHandler<DemoEvent> evHandler1;
-  EventHandler<DemoEvent> evHandler2;
-  EventHandler<DemoEvent> evHandler3;
+  private Disruptor<DemoEvent> disruptor;
+  private EventTranslator<DemoEvent> evTranslator;
+  private EventHandler<DemoEvent> evHandler1;
+  private EventHandler<DemoEvent> evHandler2;
+  private EventHandler<DemoEvent> evHandler3;
 
   @SuppressWarnings("unchecked")
   public DisruptorWithSerialConsumers() {
@@ -46,7 +48,7 @@ public class DisruptorWithSerialConsumers {
   public void engage() {
     System.out.println("Starting the Disruptor");
     // starts the event processors (consumers)
-    RingBuffer<DemoEvent> ringBuf = disruptor.start();   
+    final RingBuffer<DemoEvent> ringBuf = disruptor.start();   
 
     // publish three events
     disruptor.publishEvent(evTranslator);

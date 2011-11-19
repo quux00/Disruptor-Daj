@@ -107,18 +107,6 @@
     </java>
   </target>
   
-  <target name="run-disruptor" depends="compile" description="Run SimpleDisruptor demo">
-    <java classname="demo.disruptor.SimpleDisruptor">
-      <classpath refid="project.classpath" />
-    </java>
-  </target>
-  
-  <target name="run-serial-consumers" depends="compile" description="Run DisruptorWithSerialConsumers demo">
-    <java classname="demo.disruptor.DisruptorWithSerialConsumers">
-      <classpath refid="project.classpath" />
-    </java>
-  </target>
-  
   <target name="run-batchproc" depends="compile" description="Run BatchEventProcessorDemo">
     <java classname="demo.disruptor.BatchEventProcessorDemo">
       <classpath refid="project.classpath" />
@@ -136,6 +124,26 @@
       <classpath refid="project.classpath" />
     </java>
   </target>
+
+  <!-- Targets that use the Fluent DSL API -->
+    <target name="run-disruptor" depends="compile" description="Run SimpleDisruptor demo (uses Fluent DSL)">
+    <java classname="demo.disruptor.fluent_dsl.SimpleDisruptor">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
   
+  <target name="run-serial-consumers" depends="compile" description="Run DisruptorWithSerialConsumers demo (uses Fluent DSL)">
+    <java classname="demo.disruptor.fluent_dsl.DisruptorWithSerialConsumers">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+  <target name="run-manypubs-dsl" depends="compile" description="Run MultiplePublishersUsingDisruptor demo (uses Fluent DSL)">
+    <java classname="demo.disruptor.fluent_dsl.MultiplePublishersUsingDisruptor">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
+
 </project>
 
