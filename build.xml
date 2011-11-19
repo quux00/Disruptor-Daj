@@ -131,5 +131,11 @@
     </java>
   </target>
   
+  <target name="run-3pubs" depends="compile" description="Run ThreePublishersDemo">
+    <java classname="demo.disruptor.ThreePublishersDemo">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
 </project>
 
