@@ -16,7 +16,7 @@ There is an Ant build file.  The only requirement is that you copy the disruptor
 
 ## Daj?
 
-Since the Disruptor is named after the main ship's weapon of the Klingon Empire (http://code.google.com/p/disruptor/wiki/FrequentlyAskedQuestions), this project includes the Klingon word *Daj*, which means 'test'.  I tried looking up the Klingon word for 'demostration', but couldn't find one.
+Since the Disruptor is named after the main ship's weapon of the Klingon Empire (http://code.google.com/p/disruptor/wiki/FrequentlyAskedQuestions), this project includes the Klingon word *Daj*, which means 'test'.  I tried looking up the Klingon word for 'demonstration', but couldn't find one.
 
 ## Future 
 
