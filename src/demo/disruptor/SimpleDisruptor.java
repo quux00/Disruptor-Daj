@@ -47,6 +47,7 @@ public class SimpleDisruptor {
     RingBuffer<DemoEvent> ringBuf = disruptor.start();
 
     // now we have to publish something via the translator
+    System.out.println("Publishing one event via a Translator");
     disruptor.publishEvent(evTranslator);
     // wait for all events to be processed, then stop the processors
     disruptor.shutdown();    
