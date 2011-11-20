@@ -144,6 +144,12 @@
     </java>
   </target>
   
+  <target name="run-manypubs-dsl-no-translator" depends="compile" description="Run MultiplePublishersUsingDisruptorNoTranslator demo (uses Fluent DSL)">
+    <java classname="demo.disruptor.fluent_dsl.MultiplePublishersUsingDisruptorNoTranslator">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
 
 </project>
 
