@@ -32,7 +32,7 @@ public class MultiplePublishersUsingDisruptor {
     disruptor.handleEventsWith( new DemoEventHandler(1) );  // just one consumer for this demo
 
     for (int i = 1; i <= NUM_PUBLISHERS; i++) {
-      // TODO: also try setting shouldPause() !!
+      // Note: also try toggling shouldPause()
       pubs.add( new DisruptorDemoPublisher(i, NUM_MSGS_TO_PUBLISH_PER_PUBLISHER,
                                            disruptor, cycBarrier).shouldPause(true) );
     }

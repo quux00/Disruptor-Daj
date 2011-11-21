@@ -19,8 +19,8 @@ public class SimpleDisruptor {
   
   public static final int RING_SIZE = 32;
 
-  Disruptor<DemoEvent> disruptor;
-  EventTranslator<DemoEvent> evTranslator;
+  private Disruptor<DemoEvent> disruptor;
+  private EventTranslator<DemoEvent> evTranslator;
                                                             
   // I can't seem to satisfy the compiler when passing EventHandlers
   // to handleEventsWith, so I just told it shut up instead ...

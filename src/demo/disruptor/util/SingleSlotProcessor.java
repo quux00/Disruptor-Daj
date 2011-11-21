@@ -12,7 +12,7 @@ import demo.disruptor.DemoEvent;
  * An Event Processor that will consume only the next entry off
  * the RingBuffer, even if more are available to be processed
  */
-public class SingleSlotProcessor implements EventProcessor{
+public class SingleSlotProcessor implements EventProcessor {
   private final int id;
   private final Sequence myseq = new Sequence();  // init val: -1
   private final SequenceBarrier barrier;
@@ -59,7 +59,9 @@ public class SingleSlotProcessor implements EventProcessor{
                       id, lastPub, ev.toString());
 
     // need to update your Sequence to let the publisher (or trailing)
-    // consumer know when you have processed it
+    // consumer know when you have processed it (EventHandler does not
+    // need to do this since it is handled by the wrapper EventProcessor,
+    // such as BatchEventProcessor)
     myseq.set(myseq.get() + 1L);
 
     if (latch != null) latch.countDown();

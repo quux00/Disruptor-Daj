@@ -10,7 +10,6 @@ import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 
 import demo.disruptor.*;
-import demo.disruptor.util.DemoEventTranslator;
 import demo.disruptor.util.DemoEventHandler;
 
 public class MultiplePublishersUsingDisruptorNoTranslator {
@@ -80,7 +79,6 @@ public class MultiplePublishersUsingDisruptorNoTranslator {
     private final int howmany;   // how many events to publish once its run method is called
     private final RingBuffer<DemoEvent> ringBuf;
     private final CyclicBarrier cyclicBarrier;
-    private final EventTranslator evTranslator;
 
     public DisruptorDemoPublisher(int id, int howmany, RingBuffer<DemoEvent> rb) {
       this(id, howmany, rb, null);
@@ -91,7 +89,6 @@ public class MultiplePublishersUsingDisruptorNoTranslator {
       this.howmany = howmany;
       this.ringBuf = rb;
       this.cyclicBarrier = cyclicBarrier;
-      evTranslator = new DemoEventTranslator(id, false);
     }
 
     /**
@@ -105,8 +102,6 @@ public class MultiplePublishersUsingDisruptorNoTranslator {
       return this;
     }
 
-    // TODO: need to make DemoEventTranslator parameterized to see if this warning
-    //       message goes away ...
     @SuppressWarnings("unchecked")
     public void run() {
       try {
