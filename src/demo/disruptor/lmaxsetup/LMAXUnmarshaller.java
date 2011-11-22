@@ -7,6 +7,10 @@ import com.lmax.disruptor.RingBuffer;
 
 public class LMAXUnmarshaller implements EventHandler<LMAXEvent> {
   public void onEvent(LMAXEvent event, long sequence, boolean endOfBatch) {
+    // // DEBUG
+    // System.out.printf("LMAXUnmarshaller: seq: %d endOfBatch: %s\n", sequence, endOfBatch);
+    // System.out.flush();
+    // // END DEBUG
     int pos = 1;
     if (event.getReplicatedMessage() != null) {
       pos++;

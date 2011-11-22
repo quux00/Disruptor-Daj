@@ -50,8 +50,8 @@ public class LMAXSetup {
   
   public static final int RING_SIZE = 4096;
   // number of events to push through the LMAX dual Disruptor system
-  public static final int TOT_EVENTS = 100;
-  public static final File outputFile = new File("lmax.out.txt");
+  public static final int TOT_EVENTS = 400;
+  public static final File outputFile = new File("lmax.out");
 
   private Disruptor<LMAXEvent> inputDisruptor;
   private Disruptor<LMAXEvent> outputDisruptor;
@@ -69,7 +69,6 @@ public class LMAXSetup {
                                               new MultiThreadedClaimStrategy(RING_SIZE),
                                               new YieldingWaitStrategy());
 
-
     outputDisruptor = new Disruptor<LMAXEvent>(LMAXEvent.FACTORY,
                                                execService,
                                                new MultiThreadedClaimStrategy(RING_SIZE),
@@ -80,11 +79,19 @@ public class LMAXSetup {
     return this;
   }
 
-
+  /**
+   * Main functionality method
+   */
   public LMAXSetup engage() {
     inputDisruptor.start();
     outputDisruptor.start();
     startReceiverPublisher();
+
+    try {
+     latch.await(); // wait for FinalHandler to process all the events 
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
     
     inputDisruptor.shutdown();
     outputDisruptor.shutdown();
@@ -93,7 +100,7 @@ public class LMAXSetup {
   }
 
   private void startReceiverPublisher() {
-    throw new RuntimeException("startReceiverPublisher() not implemented yet");
+    execService.execute(new LMAXReceiver(inputDisruptor, TOT_EVENTS).shouldPause(true));
   }
 
   // TODO: still not sure how to create an implicit or explicit array
@@ -114,7 +121,7 @@ public class LMAXSetup {
   @SuppressWarnings("unchecked")
   private void plugInConsumersForOutputDisruptor() {
     outputDisruptor.handleEventsWith(new LMAXMarshaller()).
-      then(new LMAXFinalHandler(outputFile));
+      then(new LMAXFinalHandler(outputFile, latch));
   }
 
   /* ---[ Main ]--- */

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 import com.lmax.disruptor.EventHandler;
@@ -14,8 +15,10 @@ import com.lmax.disruptor.LifecycleAware;
 public class LMAXFinalHandler implements EventHandler<LMAXEvent>, LifecycleAware {
   private final List<String> eventMsgs = new ArrayList<String>();
   private final BufferedWriter fwriter;
+  private final CountDownLatch latch;
 
-  public LMAXFinalHandler(final File outFile) {
+  public LMAXFinalHandler(final File outFile, final CountDownLatch latch) {
+    this.latch = latch;
     try {
       fwriter = new BufferedWriter( new FileWriter(outFile) );      
 
@@ -33,11 +36,15 @@ public class LMAXFinalHandler implements EventHandler<LMAXEvent>, LifecycleAware
     if (endOfBatch) {
       eventMsgs.add( event.toString() );
       writeToFile( joinMessages() );
+      // DEBUG
+      System.out.println("FinalHandler: Just Batched a write: " + eventMsgs.size());
+      // END DEBUG
       eventMsgs.clear();
 
     } else {
       eventMsgs.add( event.toString() );
     }    
+    latch.countDown();
   }
 
   private String joinMessages() {
@@ -63,15 +70,13 @@ public class LMAXFinalHandler implements EventHandler<LMAXEvent>, LifecycleAware
   /* ---[ LifecycleAware Methods ]--- */
 
   public void onStart() {
-    // DEBUG
     System.out.println("LifeCycleAware in FinalHandler: onStart called");
-    // END DEBUG
+    System.out.flush();
   }
 
   public void onShutdown() {
-    // DEBUG
     System.out.println("LifeCycleAware in FinalHandler: onShutdown called");
-    // END DEBUG
+    System.out.flush();
     if (fwriter != null) {
       try {
         fwriter.close();

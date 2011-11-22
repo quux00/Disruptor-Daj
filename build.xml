@@ -150,6 +150,13 @@
     </java>
   </target>
   
+  <!-- LMAX Setup Simulator -->
+  <target name="run-lmax" depends="compile" description="Run LMAXSetup demo (simluates LMAX Published model)">
+    <java classname="demo.disruptor.lmaxsetup.LMAXSetup">
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
+  
 
 </project>
 

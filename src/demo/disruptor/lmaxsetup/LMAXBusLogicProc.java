@@ -30,7 +30,7 @@ public class LMAXBusLogicProc implements EventHandler<LMAXEvent> {
     long seq = outputRingBuf.next();
     LMAXEvent outputEvent = outputRingBuf.get(seq);
     outputEvent.copy(inputEvent);
-    outputEvent.setPushedOnto1Id(seq);
+    outputEvent.setPushedOnto2Id(seq);
     outputRingBuf.publish(seq);
   }
   

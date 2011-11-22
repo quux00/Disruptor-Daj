@@ -93,9 +93,10 @@ public class LMAXEvent {
 
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("LMAXEvent:\n  PushedOn1Id: ").append(id_pushedOnto1);
+    sb.append("LMAXEvent:");
+    sb.append("\n  PushedOn1Id      : ").append(id_pushedOnto1);
     sb.append("\n  PulledOff1Id     : ").append(id_pulledOff1);
-    sb.append("\n  PushedOn1Id      : ").append(id_pushedOnto2);
+    sb.append("\n  PushedOn2Id      : ").append(id_pushedOnto2);
     sb.append("\n  JournalMsg       : ").append(journalMessage);
     sb.append("\n  ReplicatedMsg    : ").append(replicatedMessage);
     sb.append("\n  UnmarshalledMesg : ").append(unmarshalledMessage);
